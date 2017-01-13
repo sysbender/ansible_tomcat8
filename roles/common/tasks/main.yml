@@ -1,0 +1,24 @@
+---
+
+# common tasks for all linux server
+#
+- name: install ntp
+  yum: name=ntp state=present
+  tags: ntp
+
+- name: install common dependencies
+  yum: name={{ item }} state=installed
+  with_items: 
+    - libselinux-python
+    - libsemanage-python
+    - firewalld
+
+
+- name: configure ntp file
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  tags: ntp
+  notify: restart ntp
+
+- name: start ntp service
+  service: name=ntpd state=started enabled=yes
+  tags: ntp

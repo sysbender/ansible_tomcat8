@@ -1,0 +1,23 @@
+---
+# oracle db user and password for webapp
+# db_username: webapp
+# db_password: webapp
+
+# oracle 11g xe rpm folder and filename
+rpm_folder: /home/vagrant/xe/files/
+rpm_file: oracle-xe-11.2.0-1.0.x86_64.rpm
+
+# oracle xe need at least 2G swap file
+swap_file_path: /swapfile
+# Use any of the following suffixes
+# # c=1
+# # w=2
+# # b=512
+# # kB=1000
+# # K=1024
+# # MB=1000*1000
+# # M=1024*1024
+# # xM=M
+# # GB=1000*1000*1000
+# # G=1024*1024*1024
+swap_file_size: 2G

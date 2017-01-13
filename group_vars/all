@@ -1,0 +1,8 @@
+---
+
+# variables for all host groups
+
+ntpserver: 0.ca.pool.ntp.org
+db_ipaddr: 192.168.33.71
+db_username: webapp
+db_password: webapp

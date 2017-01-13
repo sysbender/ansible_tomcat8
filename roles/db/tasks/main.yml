@@ -1,0 +1,77 @@
+---
+- include: swap.yml
+
+- name: add group dba
+  group: name=dba system=yes state=present
+
+- file: path=/u01/app state=directory
+
+- name: add user oracle
+  user: name=oracle system=yes group=dba home=/u01/app/oracle shell=/bin/bash state=present
+
+- file: path=/u01/app/oracle owner=oracle group=dba recurse=yes state=directory
+
+- copy: src=oracle-xe.rsp dest=/tmp/files/ owner=root group=root mode=0755
+- copy: src={{rpm_folder}}{{rpm_file}} dest=/tmp/files/ owner=root group=root mode=0755
+
+#install xe
+
+- name: install required packages for RedHat
+  yum: name={{item}} state=present
+  with_items:
+    - bc
+    - net-tools
+    - libaio
+
+
+- name: install oracle xe for Redhat
+  yum: name={{item}} disable_gpg_check=yes disablerepo=* state=installed
+  with_items:
+    - /tmp/files/{{rpm_file}}
+
+
+#configure
+
+- name: stop oracle-xe
+  service: name=oracle-xe state=stopped
+
+- name: remove previous configuration
+  file: path=/etc/sysconfig/oracle-xe state=absent
+
+- name: configure oracle
+  shell: /etc/init.d/oracle-xe configure responseFile=/tmp/files/oracle-xe.rsp  >> /tmp/files/oracle-xe.log
+  ignore_errors: True
+  tags:
+  - configure
+
+- name: restart oracle-xe
+  service: name=oracle-xe state=restarted
+# setup oracle user enviroment 
+
+- file: path=/u01/app/oracle/.bash_profile owner=oracle group=dba state=touch
+- file: path=/u01/app/oracle/.bashrc owner=oracle group=dba state=touch
+- name: setup oracle environment
+  shell: /bin/echo 'source /u01/app/oracle/product/11.2.0/xe/bin/oracle_env.sh' >> /u01/app/oracle/.bash_profile
+
+# create oracle user and import data
+- template: src=create-user.sql dest=/tmp/files/create-user.sql
+  tags:
+    - sql
+- name: run sql script
+  shell: su - oracle -c 'sqlplus / as sysdba @/tmp/files/create-user.sql'
+  tags:
+    - sql
+ 
+- copy: src=import-data.sql dest=/tmp/files/import-data.sql
+  tags:
+    - sql
+
+- name: import data
+  shell: su - oracle -c "sqlplus {{db_username}}/{{db_username}} @/tmp/files/import-data.sql"
+  tags:
+    - sql
+- name: open oracle port on firewall
+  firewalld: port=1521/tcp permanent=true state=enabled immediate=yes
+
+- shell: 
+- file: path=/tmp/files/ state=absent

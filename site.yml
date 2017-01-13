@@ -1,0 +1,21 @@
+---
+
+# this playbook deploy oracle xe + tomcat 8
+#
+
+- name: common setting for linux
+  hosts: all
+  remote_user: root
+  roles:
+    - common
+- name: install and configure db oracle 11g express Edition
+  hosts: db
+  remote_user: root
+  roles:
+    - db
+
+- name: install and configure openjdk , tomcat 8; deploy a web app in war format
+  hosts: web
+  remote_user: root
+  roles:
+    - web
