@@ -1,9 +1,0 @@
----
-
-- hosts: db
-  remote_user: root
-  tasks:
-  - name: run sql script
-#    shell: /u01/app/oracle/product/11.2.0/xe/bin/sqlplus / as sysdba @/tmp/tt.sql
-    shell: su - oracle -c 'sqlplus / as sysdba @/tmp/tt.sql'
-  - firewalld: port=1521/tcp permanent=true state=enabled immediate=yes
