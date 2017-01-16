@@ -12,7 +12,8 @@
     - swap.file.check
 
 - name: Create swap file
-  command: fallocate -l {{swap_file_size}} {{swap_file}}
+#  command: fallocate -l {{swap_file_size}} {{swap_file}}
+  command: dd if=/dev/zero of={{swap_file}}  count=2048 bs=1MiB
   when: not swap_file_check.stat.exists
   tags:
     - swap.file.create
@@ -45,7 +46,7 @@
 
 - name: Turn on swap
   sudo: yes
-  command: swapon -a
+  shell: swapon /swapfile
 #  when: not swap_file_check.stat.exists
   tags:
     - swap.turn.on

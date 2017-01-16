@@ -1,0 +1,16 @@
+---
+
+# this playbook deploy tomcat 8
+#
+
+- name: common setting for linux
+  hosts: web
+  remote_user: root
+  roles:
+    - common
+
+- name: install and configure openjdk , tomcat 8; deploy a web app in war format
+  hosts: web
+  remote_user: root
+  roles:
+    - web

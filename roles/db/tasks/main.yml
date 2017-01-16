@@ -57,7 +57,7 @@
 - template: src=create-user.sql dest=/tmp/files/create-user.sql
   tags:
     - sql
-- name: run sql script
+- name: run sql script , use su to set environment variable
   shell: su - oracle -c 'sqlplus / as sysdba @/tmp/files/create-user.sql'
   tags:
     - sql
@@ -70,8 +70,15 @@
   shell: su - oracle -c "sqlplus {{db_username}}/{{db_username}} @/tmp/files/import-data.sql"
   tags:
     - sql
+- name: start firewll
+  service: name=firewalld state=started enabled=yes
+  tags:
+    - firewall
 - name: open oracle port on firewall
   firewalld: port=1521/tcp permanent=true state=enabled immediate=yes
+  tags:
+    - firewall
 
-- shell: 
-- file: path=/tmp/files/ state=absent
+- file: path="/tmp/files/" state=absent
+  tags:
+    - cleanup

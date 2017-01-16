@@ -76,6 +76,8 @@
 
 #- name: Add firewalld service file
 #  template: src=firewalld/tomcat.xml dest=/usr/lib/firewalld/services/tomcat.xml owner=root group=root
+- name: start firewall
+  service: name=firewalld state=started enabled=yes
 
 - name: enable masquerade
   shell: firewall-cmd --zone=public --add-masquerade --permanent
@@ -88,8 +90,9 @@
 #- name: Expose tomcat
 #  shell: firewall-cmd --add-service=tomcat --zone=public --permanent
 
-- name: Wait for tomcat started
-  wait_for: port=80
+#- name: Wait for tomcat started
+#  wait_for: port=80
+  
 
 # deploy war
 - name: install unzip

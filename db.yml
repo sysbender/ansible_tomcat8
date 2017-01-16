@@ -1,0 +1,16 @@
+---
+
+# this playbook deploy oracle xe 
+#
+
+- name: common setting for linux
+  hosts: db
+  remote_user: root
+  roles:
+    - common
+- name: install and configure db oracle 11g express Edition
+  hosts: db
+  remote_user: root
+  roles:
+    - db
+
